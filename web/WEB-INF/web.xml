@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="6.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
+    <context-param>
+        <param-name>storagePath</param-name>
+        <param-value>C:\Users\DELL\Pictures\crap</param-value>
+    </context-param>
+    <servlet>
+        <servlet-name>Login</servlet-name>
+        <servlet-class>controller.LoginController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>Dashboard</servlet-name>
+        <servlet-class>controller.DashboardController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>Profile</servlet-name>
+        <servlet-class>controller.ProfileController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>File</servlet-name>
+        <servlet-class>controller.FileController</servlet-class>
+        <multipart-config>
+            <location>C:\Users\DELL\Pictures\crap\temp</location>
+            <max-file-size>1073741824</max-file-size>
+            <max-request-size>1073741824</max-request-size>
+            <file-size-threshold>1048576</file-size-threshold>
+        </multipart-config>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Dashboard</servlet-name>
+        <url-pattern>/dashboard</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Login</servlet-name>
+        <url-pattern>/login/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Profile</servlet-name>
+        <url-pattern>/profile</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>File</servlet-name>
+        <url-pattern>/files/*</url-pattern>
+    </servlet-mapping>
+</web-app>

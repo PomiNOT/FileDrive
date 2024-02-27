@@ -1,32 +1,31 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%
-	Object passwordError = request.getAttribute("passwordError"); 
-	Object usernameLO = request.getParameter("username");
-	boolean goToHome = request.getAttribute("goToHome") != null ? true : false;
-%>
-<form id="signInForm" hx-post="login/verify" hx-ext="morph" hx-swap="morph:outerHTML">
+<form id="signInForm" hx-post="?action=login" hx-ext="morph" hx-swap="morph:outerHTML">
 	<h2 style="margin: 0;">Login</h2>
 	<p>To continue to your Drive</p>
 	<label for="username">Username</label>
-	<input type="text" name="username" value="<%= usernameLO != null ? usernameLO : "" %>" required>
+	<input type="text" name="username" value="${username}" required>
 	<label for="password">Password</label>
 	<input id="password" type="password" name="password" required>
-	<% if (passwordError != null) { %>
-	<small style="color: red;"><%= passwordError %></small>
-	<% } %>
+    <c:if test="${not empty error}">
+        <small style="color: red;">${error}</small>
+    </c:if>
 	<div class="grid">
-	<% if (!goToHome) { %>
-		<button type="button" class="outline" onclick="transitionWrap(signUp)">Sign up</button>
-		<button type="submit">Continue</button>
-	<% } else { %>
-		<button type="submit" disabled>Succeeded</button>
-	<% } %>
+    <c:choose>
+        <c:when test="${loggedIn}">
+            <button type="submit" disabled>Succeeded</button>
+        </c:when>
+        <c:otherwise>
+            <button type="button" class="outline" onclick="transitionWrap(signUp)">Sign up</button>
+            <button type="submit">Continue</button>
+        </c:otherwise>
+    </c:choose>
 	</div>
-	<% if (goToHome) { %>
+    <c:if test="${loggedIn}">
 	<script>
 		const formContainer = document.querySelector(".form-container");
 		setTimeout(() => formContainer.classList.add("invisible"), 500);
-		setTimeout(() => window.location.replace('home'), 1000);
+		setTimeout(() => window.location.replace('dashboard'), 1000);
 	</script>
-	<% } %>
+    </c:if>
 </form>

@@ -1,61 +1,19 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html data-theme="light">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>FileDrive - Login</title>
 		<link rel="stylesheet" href="styles/pico.css">
-		<style>
-			main {
-				padding: 0 20px !important;
-				display: grid;
-				place-items: center;
-				height: 100vh;
-				transition: background 200ms, backdrop-filter 200ms;
-			}
-
-			html {
-				background-color: #c8f7fd;
-			}
-
-			body {
-				background-image: url(images/login_illustration.jpg);
-				background-position: center;
-				background-size: contain;
-			}
-
-			.form-container {
-				padding: 20px 40px;
-				border-radius: 10px;
-				width: 100%;
-				max-width: 600px;
-				border: 2px gray solid;
-				background: white;
-				box-shadow: 10px 10px 71px 0px rgba(0,0,0,0.31);
-				-webkit-box-shadow: 10px 10px 71px 0px rgba(0,0,0,0.31);
-				-moz-box-shadow: 10px 10px 71px 0px rgba(0,0,0,0.31);
-				transition: opacity 300ms;
-			}
-
-			.form-container.invisible {
-				opacity: 0;
-				pointer-events: none;
-			}
-
-			.form-container form {
-				margin: 0;
-				transition: opacity 300ms;
-			}
-
-			main:has(input:focus) {
-				background: rgba(0, 0, 0, 0.5);
-				backdrop-filter: blur(3px);
-			}
-
-			.hidden {
-				display: none;
-			}
-		</style>
+		<link rel="stylesheet" href="styles/login.css">
+        <style>
+            body {
+                background-image: url(images/login_illustration.jpg);
+                background-position: center;
+                background-size: contain;
+            }
+        </style>
     </head>
     <body>
 		<main>
