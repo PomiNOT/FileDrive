@@ -4,6 +4,31 @@
         <param-name>storagePath</param-name>
         <param-value>C:\Users\DELL\Pictures\crap</param-value>
     </context-param>
+    <filter>
+        <filter-name>Auth</filter-name>
+        <filter-class>filter.AuthFilter</filter-class>
+    </filter>
+    <filter>
+        <filter-name>BlockJSP</filter-name>
+        <filter-class>filter.BlockJSP</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>BlockJSP</filter-name>
+        <url-pattern>*.jsp</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>Auth</filter-name>
+        <url-pattern>/profile</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>Auth</filter-name>
+        <url-pattern>/dashboard</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>Auth</filter-name>
+        <url-pattern>/files</url-pattern>
+    </filter-mapping>
     <servlet>
         <servlet-name>Login</servlet-name>
         <servlet-class>controller.LoginController</servlet-class>
@@ -26,6 +51,10 @@
             <file-size-threshold>1048576</file-size-threshold>
         </multipart-config>
     </servlet>
+    <servlet>
+        <servlet-name>SharedViewController</servlet-name>
+        <servlet-class>controller.SharedViewController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Dashboard</servlet-name>
         <url-pattern>/dashboard</url-pattern>
@@ -41,5 +70,9 @@
     <servlet-mapping>
         <servlet-name>File</servlet-name>
         <url-pattern>/files/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SharedViewController</servlet-name>
+        <url-pattern>/shared/*</url-pattern>
     </servlet-mapping>
 </web-app>

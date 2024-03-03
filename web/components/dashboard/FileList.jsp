@@ -10,6 +10,9 @@
     <c:if test="${not empty param.order}">
         <input type="hidden" name="order" value="${param.order}">
     </c:if>
+    <c:if test="${not empty param.trashed}">
+        <input type="hidden" name="trashed" value="${param.trashed}">
+    </c:if>
     <c:if test="${not empty param.path and empty param.doNotPreservePath}">
         <input type="hidden" name="path" value="${param.path}">
         <input id="toolbarPath" hx-swap-oob="true" type="hidden" name="path" value="${param.path}">
@@ -20,6 +23,7 @@
         <p>Name</p>
         <p>Type</p>
         <p>Updated</p>
+        <p></p>
     </div>
 
     <c:if test="${not empty items}">
@@ -37,6 +41,7 @@
                             "path": "${f.getDescendantPath()}",
                             "sortBy": "${param.sortBy}",
                             "order": "${param.order}",
+                            "trashed": "${param.trashed}",
                             "doNotPreservePath": "${param.doNotPreservePath}"
                             }'
                         >
@@ -62,6 +67,9 @@
                             <p>${f.getFileName()}</p>
                             <p class="content__table-item-secondary">${f.isFolder() ? "Folder" : "File" }</p>
                             <p class="content__table-item-secondary">${dateUtil.getRelativeTime(f.getUpdated())}</p>
+                            <button type="button" onclick="myFiles.share(${f.getFileId()})">
+                                <ion-icon name="share-outline"></ion-icon>
+                            </button>
                         </li>
                     </c:otherwise>
                 </c:choose>

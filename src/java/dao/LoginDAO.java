@@ -22,6 +22,7 @@ public class LoginDAO extends DBContext {
         stmt.setString(3, user.getFirstName());
         stmt.setString(4, user.getLastName());
         stmt.executeUpdate();
+        connection.commit();
 
         return getUserByUsername(user.getUsername());
     }
@@ -36,6 +37,7 @@ public class LoginDAO extends DBContext {
         stmt.setString(3, user.getPassword());
         stmt.setString(4, user.getUsername());
         stmt.executeUpdate();
+        connection.commit();
     }
 
     public UserAccount getUserByUsername(String username) throws SQLException {
@@ -46,6 +48,7 @@ public class LoginDAO extends DBContext {
         stmt = connection.prepareStatement(sql);
         stmt.setString(1, username);
         rs = stmt.executeQuery();
+        connection.commit();
 
         if (rs.next()) {
             UserAccount user = new UserAccount();
@@ -67,5 +70,6 @@ public class LoginDAO extends DBContext {
         stmt = connection.prepareStatement(sql);
         stmt.setString(1, username);
         stmt.executeUpdate();
+        connection.commit();
     }
 }

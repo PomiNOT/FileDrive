@@ -9,14 +9,23 @@ public class FileItem {
     private String owner;
     private String location = null;
     private boolean folder = true;
-    private String path = "root";
+    private String path = "-1";
     private Date updated = new Date();
     private boolean trashed = false;
+    private int oldParent = -1;
 
     public FileItem() {}
 
     public int getFileId() {
         return fileId;
+    }
+
+    public int getOldParent() {
+        return oldParent;
+    }
+
+    public void setOldParent(int old) {
+        this.oldParent = old;
     }
 
     public String getFileName() {

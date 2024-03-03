@@ -1,6 +1,8 @@
 package controller;
 
 import dao.FileDAO;
+import dao.SharingDAO;
+import model.FileShareItem;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,27 +20,36 @@ import java.util.List;
 
 public class FileController extends HttpServlet {
     FileDAO dao;
+    SharingDAO sharingDAO;
 
     @Override
     public void init() {
         dao = new FileDAO();
+        sharingDAO = new SharingDAO();
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        UserAccount account = SessionUtils.getSessionUser(request);
-        if (account == null) {
-            response.sendError(403, "Forbidden");
-            return;
-        }
+        UserAccount account = (UserAccount)request.getAttribute("currentUser");
 
         String sortBy = request.getParameter("sortBy");
         String order = request.getParameter("order");
         String filter = request.getParameter("filter");
         String path = request.getParameter("path");
+        String shared = request.getParameter("shared");
 
         try {
+            if (shared != null) {
+                List<FileItem> items = sharingDAO.getAllSharedFromUser(
+                        account.getUsername()
+                );
+
+                request.setAttribute("items", items);
+                request.getRequestDispatcher("/components/dashboard/SharedFileList.jsp").forward(request, response);
+                return;
+            }
+
             List<FileItem> items = dao.getAllFilesFromOwner(
                     account.getUsername(),
                     path
@@ -55,7 +66,7 @@ public class FileController extends HttpServlet {
                     }
                 }
             }
-            
+
             if (sortBy != null && order != null) {
                 int factor = order.equals("desc") ? -1 : 1;
 
@@ -101,11 +112,13 @@ public class FileController extends HttpServlet {
             switch (action) {
                 case "createFolder" -> {
                     String folderName = request.getParameter("folderName");
+                    String parent = request.getParameter("parent");
 
                     FileItem item = new FileItem();
                     item.setFileName(folderName);
                     item.setIsFolder(true);
                     item.setOwner(account.getUsername());
+                    item.setPath(parent == null ? "-1" : parent);
 
                     try {
                         dao.createFile(item);
@@ -126,7 +139,7 @@ public class FileController extends HttpServlet {
                             ids[i] = Integer.parseInt(files[i]);
                         }
 
-                        dao.moveFiles(ids, Integer.parseInt(target));
+                        dao.moveFiles(ids, Integer.parseInt(target), account.getUsername(), false);
                     } catch (SQLException e) {
                         System.out.println(e.getMessage());
                         response.sendError(500, "Internal Server Error");
@@ -134,6 +147,53 @@ public class FileController extends HttpServlet {
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                         response.sendError(400, e.getMessage());
+                        return;
+                    }
+                }
+                case "markTrash" -> {
+                    String[] files = request.getParameterValues("files");
+                    String trashed = request.getParameter("trashed");
+                    boolean isTrashed = false;
+
+                    if (trashed != null && trashed.equals("true")) {
+                        isTrashed = true;
+                    }
+
+                    try {
+                        Integer[] ids = new Integer[files.length];
+
+                        for (int i = 0; i < files.length; i++) {
+                            ids[i] = Integer.parseInt(files[i]);
+                        }
+
+                        dao.markTrash(ids, isTrashed, account.getUsername());
+                    } catch (SQLException e) {
+                        System.out.println(e.getMessage());
+                        response.sendError(500, "Internal Server Error");
+                        return;
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        response.sendError(400, e.getMessage());
+                        return;
+                    }
+                }
+                case "shareFile" -> {
+                    int id = Integer.parseInt(request.getParameter("fileId"));
+                    String sharedTo = request.getParameter("sharedTo");
+                    String sharedFrom = account.getUsername();
+                    boolean isPublic = Boolean.parseBoolean(request.getParameter("public"));
+
+                    FileShareItem item = new FileShareItem();
+                    item.setFileId(id);
+                    item.setSharedTo(sharedTo);
+                    item.setSharedBy(sharedFrom);
+                    item.setIsPublic(isPublic);
+
+                    try {
+                        sharingDAO.createShare(item);
+                    } catch (SQLException e) {
+                        System.out.println(e.getMessage());
+                        response.sendError(500, "Internal Server Error");
                         return;
                     }
                 }
@@ -145,15 +205,18 @@ public class FileController extends HttpServlet {
         String defaultPath = getServletContext().getInitParameter("storagePath");
         String uuid = UUID.randomUUID().toString();
         String fileLocation = defaultPath + File.separator + uuid;
+        String parent = request.getParameter("parent");
 
         for (Part part : request.getParts()) {
             part.write(fileLocation);
+
 
             FileItem item = new FileItem();
             item.setFileName(part.getSubmittedFileName());
             item.setIsFolder(false);
             item.setLocation(uuid);
             item.setOwner(account.getUsername());
+            item.setPath(parent == null ? "-1" : parent);
 
             try {
                 dao.createFile(item);

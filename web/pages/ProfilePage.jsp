@@ -32,7 +32,7 @@
                         <input type="text" name="firstName" placeholder="First Name" value="${user.getFirstName()}" required>
                         <input type="text" name="lastName" placeholder="Last Name" value="${user.getLastName()}" required>
                     </div>
-                    <input type="text" name="username" placeholder="Username" value="${user.getUsername()}" required>
+                    <input type="text" name="username" placeholder="Username" value="${user.getUsername()}" disabled>
                     <c:if test="${error}">
                         <small style="color: red;">${error}</small>
                     </c:if>

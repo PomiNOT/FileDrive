@@ -32,11 +32,7 @@ public class ProfileController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        UserAccount account = SessionUtils.getSessionUser(request);
-        if (account == null) {
-            response.sendRedirect("login");
-            return;
-        }
+        UserAccount account = (UserAccount)request.getAttribute("currentUser");
 
         String action = request.getParameter("action");
 

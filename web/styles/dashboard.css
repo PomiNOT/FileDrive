@@ -9,12 +9,6 @@ html {
     }
 }
 
-@keyframes fade {
-    from {
-        opacity: 0;
-    }
-}
-
 .main-container {
     padding: 0;
     height: 100vh;
@@ -37,7 +31,6 @@ ion-icon {
 
 .main-container > div, .main-container aside {
     background: transparent;
-    animation: fade 1s;
 }
 
 .sidebar {
@@ -76,9 +69,12 @@ ion-icon {
 .content {
     padding: 0;
     position: relative;
-    height: 100%;
     grid-area: content;
     overflow: hidden;
+}
+
+.content form {
+    height: 100%;
 }
 
 .content__loading {
@@ -90,7 +86,7 @@ ion-icon {
 }
 
 .content__table {
-    --grid-style: 40px 1fr 100px 300px;
+    --grid-style: 40px 1fr 100px 300px 70px;
     --gap: 10px;
     --header-size: 40px;
     height: 100%;
@@ -124,6 +120,11 @@ ion-icon {
     border-radius: 5px;
     cursor: pointer;
     transition: background 300ms;
+}
+
+.content__table-item button {
+    --primary: transparent;
+    --form-element-spacing-vertical: 0.2rem;
 }
 
 .content__table-item input[type="checkbox"] {
