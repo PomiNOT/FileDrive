@@ -43,8 +43,6 @@
                     count = 0;
                 }
             }
-
-            console.log(count);
         }
 
         const resetCount = function() {
@@ -219,6 +217,40 @@
         shareFileDialog.showModal();
     }
 
+    function editName(id) {
+        const line = mainFileList.querySelector(`[data-item-id="${id}"`);
+        if (!line) return;
+
+
+        const text = line.querySelector('.content__table-item-name');
+        text.setAttribute('contenteditable', true);
+        text.focus();
+
+        const origText = text.textContent;
+
+        const onBlur = async () => {
+            text.removeAttribute('contenteditable');
+            text.removeEventListener('blur', onBlur);
+
+            if (!text.textContent.trim()) {
+                text.textContent = origText;
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('action', 'rename');
+            formData.append('newName', text.textContent);
+            formData.append('file', id);
+
+            await fetch('files', {
+                method: 'POST',
+                body: formData
+            });
+        };
+
+        text.addEventListener('blur', onBlur);
+    }
+
     shareFileDialog.addEventListener('htmx:afterSettle', (e) => {
         shareFileDialog.close();
     });
@@ -228,6 +260,7 @@
         moveFiles,
         goHome,
         chooseAndUploadFile,
-        share
+        share,
+        editName
     };
 })();

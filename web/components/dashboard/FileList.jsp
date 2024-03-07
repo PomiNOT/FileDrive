@@ -24,6 +24,7 @@
         <p>Type</p>
         <p>Updated</p>
         <p></p>
+        <p></p>
     </div>
 
     <c:if test="${not empty items}">
@@ -44,6 +45,7 @@
                             "trashed": "${param.trashed}",
                             "doNotPreservePath": "${param.doNotPreservePath}"
                             }'
+                            data-item-id="${f.getFileId()}"
                         >
                             <c:if test="${not empty param.selectOne}">
                                 <input hx-disable type="radio" name="selected" value="${f.getFileId()}">
@@ -51,24 +53,31 @@
                             <c:if test="${empty param.selectOne}">
                                 <input hx-disable type="checkbox" name="selected" value="${f.getFileId()}">
                             </c:if>
-                            <p>${f.getFileName()}</p>
+                            <p class="content__table-item-name">${f.getFileName()}</p>
                             <p class="content__table-item-secondary">${f.isFolder() ? "Folder" : "File" }</p>
                             <p class="content__table-item-secondary">${dateUtil.getRelativeTime(f.getUpdated())}</p>
+                            <p></p>
+                            <button type="button" onclick="myFiles.editName(${f.getFileId()})">
+                                <ion-icon name="create-outline"></ion-icon>
+                            </button>
                         </li>
                     </c:when>
                     <c:otherwise>
-                        <li hx-disable class="content__table-item" id="${f.getFileId()}">
+                        <li hx-disable class="content__table-item" data-item-id="${f.getFileId()}">
                             <c:if test="${not empty param.selectOne}">
                                 <input type="radio" name="selected" value="${f.getFileId()}">
                             </c:if>
                             <c:if test="${empty param.selectOne}">
                                 <input type="checkbox" name="selected" value="${f.getFileId()}">
                             </c:if>
-                            <p>${f.getFileName()}</p>
+                            <p class="content__table-item-name">${f.getFileName()}</p>
                             <p class="content__table-item-secondary">${f.isFolder() ? "Folder" : "File" }</p>
                             <p class="content__table-item-secondary">${dateUtil.getRelativeTime(f.getUpdated())}</p>
                             <button type="button" onclick="myFiles.share(${f.getFileId()})">
                                 <ion-icon name="share-outline"></ion-icon>
+                            </button>
+                            <button type="button" onclick="myFiles.editName(${f.getFileId()})">
+                                <ion-icon name="create-outline"></ion-icon>
                             </button>
                         </li>
                     </c:otherwise>

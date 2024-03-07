@@ -27,7 +27,8 @@
                 </header>
                 <p>View your user account and update your information here</p>
                 <c:set var="user" value="${sessionScope.currentUser}"></c:set>
-                <form>
+                <form method="POST" action="profile">
+                    <input type="hidden" name="action" value="updateUser">
                     <div class="grid">
                         <input type="text" name="firstName" placeholder="First Name" value="${user.getFirstName()}" required>
                         <input type="text" name="lastName" placeholder="Last Name" value="${user.getLastName()}" required>
@@ -36,8 +37,13 @@
                     <c:if test="${error}">
                         <small style="color: red;">${error}</small>
                     </c:if>
-                    <input type="password" name="password" placeholder="Password" value="random crap" required>
+                    <input type="password" name="oldPassword" placeholder="Old Password">
+                    <input type="password" name="password" placeholder="New Password">
                     <button type="submit">Edit</button>
+
+                    <c:if test="${not empty message}">
+                        <h2>${message}</h2>
+                    </c:if>
                 </form>
 
                 <h2>Danger zone</h2>

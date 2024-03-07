@@ -3,7 +3,9 @@ package dao;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import model.FileItem;
 
@@ -56,6 +58,32 @@ public class FileDAO extends DBContext {
         stmt = connection.prepareStatement(sql);
         stmt.setString(1, owner);
         stmt.setString(2, path == null ? "-1" : path);
+        rs = stmt.executeQuery();
+        connection.commit();
+
+        return makeArrayFromResultSet(rs);
+    }
+
+    public List<FileItem> getAllFilesMatching(String owner, String path, Date before, boolean isFolder, String startsWith) throws SQLException {
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        String sql = "SELECT * FROM Files WHERE fileName like ? and owner = ? and path like ? and isFolder = ?";
+
+        if (before != null) {
+            sql = "SELECT * FROM Files WHERE fileName like ? and owner = ? and path like ? and isFolder = ? and updated > ?";
+        }
+
+        stmt = connection.prepareStatement(sql);
+        stmt.setString(1, startsWith + "%");
+        stmt.setString(2, owner);
+        stmt.setString(3, (path == null ? "-1" : path) + "%");
+        stmt.setBoolean(4, isFolder);
+
+        if (before != null) {
+            stmt.setTimestamp(5, new Timestamp(before.getTime()));
+        }
+
         rs = stmt.executeQuery();
         connection.commit();
 

@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.sql.SQLException;
 import model.UserAccount;
 import utils.SessionUtils;
@@ -36,14 +37,44 @@ public class ProfileController extends HttpServlet {
 
         String action = request.getParameter("action");
 
-        if (action != null && action.equals("delete")) {
-            try {
-                dao.deleteUser(account.getUsername());
-                response.sendRedirect("login");
-                return;
-            } catch (SQLException e) {
-                request.setAttribute("error", e.getMessage());
+        try {
+            switch (action) {
+                case "delete" -> {
+                    dao.deleteUser(account.getUsername());
+                    response.sendRedirect("login");
+                }
+                case "updateUser" -> {
+                    String firstName = request.getParameter("firstName");
+                    String lastName = request.getParameter("lastName");
+                    String password = request.getParameter("password");
+                    String oldPassword = request.getParameter("oldPassword");
+
+                    if (password == null) {
+                        password = account.getPassword();
+                    } else {
+                        if (oldPassword == null || !oldPassword.equals(account.getPassword())) {
+                            request.setAttribute("message", "Old password does not match");
+                            break;
+                        }
+                    }
+
+                    UserAccount newAccount = new UserAccount(
+                        firstName,
+                        lastName,
+                        account.getUsername(),
+                        password
+                    );
+
+                    dao.updateUser(newAccount);
+
+                    HttpSession session = request.getSession(true);
+                    session.setAttribute("currentUser", newAccount);
+
+                    request.setAttribute("message", "Updated user successfully");
+                }
             }
+        } catch (SQLException e) {
+            request.setAttribute("error", e.getMessage());
         }
         
 		request.getRequestDispatcher("/pages/ProfilePage.jsp").forward(request, response);

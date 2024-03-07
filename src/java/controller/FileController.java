@@ -17,6 +17,7 @@ import model.UserAccount;
 import utils.SessionUtils;
 import java.sql.SQLException;
 import java.util.List;
+import model.ShareItem;
 
 public class FileController extends HttpServlet {
     FileDAO dao;
@@ -41,7 +42,7 @@ public class FileController extends HttpServlet {
 
         try {
             if (shared != null) {
-                List<FileItem> items = sharingDAO.getAllSharedFromUser(
+                List<ShareItem> items = sharingDAO.getAllSharedFromUser(
                         account.getUsername()
                 );
 
@@ -54,7 +55,6 @@ public class FileController extends HttpServlet {
                     account.getUsername(),
                     path
             );
-
 
             if (filter != null) {
                 switch (filter) {
@@ -194,6 +194,36 @@ public class FileController extends HttpServlet {
                     } catch (SQLException e) {
                         System.out.println(e.getMessage());
                         response.sendError(500, "Internal Server Error");
+                        return;
+                    }
+                }
+                case "rename" -> {
+                    String newName = request.getParameter("newName");
+                    int id = Integer.parseInt(request.getParameter("file"));
+
+                    try {
+                        dao.updateFileByAttribute(id, "fileName", newName);
+                    } catch (SQLException e) {
+                        System.out.println(e.getMessage());
+                        response.sendError(500, "Internal Server Error");
+                        return;
+                    }
+                }
+                case "undoShare" -> {
+                    String[] files = request.getParameterValues("files");
+
+                    try {
+                        for (int i = 0; i < files.length; i++) {
+                            int id = Integer.parseInt(files[i]);
+                            sharingDAO.deleteShare(id, account.getUsername());
+                        }
+                    } catch (SQLException e) {
+                        System.out.println(e.getMessage());
+                        response.sendError(500, "Internal Server Error");
+                        return;
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        response.sendError(400, e.getMessage());
                         return;
                     }
                 }

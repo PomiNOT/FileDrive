@@ -5,8 +5,53 @@
         <ion-icon name="file-tray-stacked" size="large"></ion-icon>
         Files
     </div>
-    <form>
-        <input class="header__search" type="text" placeholder="🔍 Search" name="search">
+    <form class="header__search" hx-get="search" hx-trigger="input" hx-target="#search-results">
+        <input class="header__search-input" type="text" placeholder="🔍 Search" name="search">
+        <div class="header__search-results">
+            <div id="search-results">
+                <%@include file="SearchFileList.jsp" %>
+            </div>
+            <div>
+                <div class="header__search-filter">
+                    <small>Type</small>
+                    <div>
+                        <label>
+                            File
+                            <input type="radio" name="isFolder" value="false" checked="true">
+                        </label>
+                        <label>
+                            Folder
+                            <input type="radio" name="isFolder" value="true">
+                        </label>
+                    </div>
+                </div>
+                <div class="header__search-filter">
+                    <small>Time frame</small>
+                    <div>
+                        <label>
+                            All time
+                            <input checked="true" type="radio" name="time" value="-1">
+                        </label>
+                        <label>
+                            Past day
+                            <input type="radio" name="time" value="86400">
+                        </label>
+                        <label>
+                            Past week
+                            <input type="radio" name="time" value="604800">
+                        </label>
+                        <label>
+                            Past month
+                            <input type="radio" name="time" value="2419200">
+                        </label>
+                        <label>
+                            Past year
+                            <input type="radio" name="time" value="29030400">
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
     </form>
     <details style="margin-bottom: 0;" role="list">
         <summary aria-haspopup="listbox">

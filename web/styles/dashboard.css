@@ -46,8 +46,32 @@ ion-icon {
 }
 
 .header__search {
+    position: relative;
+}
+
+.header__search-filter label {
+    font-size: 14px;
+}
+
+.header__search-filter div {
+    display: flex;
+    gap: 20px;
+}
+
+.header__search-input {
     --form-element-background-color: transparent;
     --form-element-active-background-color: rgba(255, 255, 255, 0.1);
+}
+
+.header__search-results {
+    padding: 10px;
+    width: 100%;
+    background: red;
+    position: absolute;
+    background: rgba(25, 25, 25, 0.6);
+    backdrop-filter: blur(10px);
+    z-index: 100;
+    border-radius: 5px 0;
 }
 
 .header__logo {
@@ -86,7 +110,7 @@ ion-icon {
 }
 
 .content__table {
-    --grid-style: 40px 1fr 100px 300px 70px;
+    --grid-style: 40px 1fr 100px 300px 70px 70px;
     --gap: 10px;
     --header-size: 40px;
     height: 100%;
@@ -209,4 +233,30 @@ ion-icon {
 
 .sidebar__nav-buttons:hover {
     background: rgba(255, 255, 255, 0.05);
+}
+
+.search-list {
+    padding: 0;
+    margin: 0;
+}
+
+.search-list li {
+    list-style-type: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px;
+}
+
+.search-list p {
+    margin: 0;
+}
+
+.search-list li:hover {
+    background: rbga(255, 255, 255, 0.2);
+    cursor: pointer;
+}
+
+.search-list ion-icon {
+    position: relative;
 }

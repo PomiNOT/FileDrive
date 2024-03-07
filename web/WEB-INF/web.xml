@@ -29,6 +29,10 @@
         <filter-name>Auth</filter-name>
         <url-pattern>/files</url-pattern>
     </filter-mapping>
+    <filter-mapping>
+        <filter-name>Auth</filter-name>
+        <url-pattern>/search</url-pattern>
+    </filter-mapping>
     <servlet>
         <servlet-name>Login</servlet-name>
         <servlet-class>controller.LoginController</servlet-class>
@@ -55,6 +59,14 @@
         <servlet-name>SharedViewController</servlet-name>
         <servlet-class>controller.SharedViewController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>DownloadController</servlet-name>
+        <servlet-class>controller.DownloadController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SearchController</servlet-name>
+        <servlet-class>controller.SearchController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Dashboard</servlet-name>
         <url-pattern>/dashboard</url-pattern>
@@ -73,6 +85,10 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>SharedViewController</servlet-name>
-        <url-pattern>/shared/*</url-pattern>
+        <url-pattern>/shared</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SearchController</servlet-name>
+        <url-pattern>/search</url-pattern>
     </servlet-mapping>
 </web-app>
