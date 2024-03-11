@@ -4,8 +4,13 @@
 
 <ul class="search-list">
     <c:forEach items="${items}" var="f">
-        <li>
-            <ion-icon name="folder-outline"></ion-icon>
+        <li onclick="dismissSearch()" hx-get="dashboard?part=myFiles&path=${f.getPath()}" hx-target=".content">
+            <c:if test="${f.isFolder()}">
+                <ion-icon name="folder-outline"></ion-icon>
+            </c:if>
+            <c:if test="${!f.isFolder()}">
+                <ion-icon name="document-outline"></ion-icon>
+            </c:if>
             <p>${f.getFileName()}</p>
         </li>
     </c:forEach>

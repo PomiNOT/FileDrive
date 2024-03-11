@@ -40,7 +40,9 @@
                 <h2>Shared file</h2>
                 <ion-icon name="document-outline"></ion-icon>
                 <p>${item.item().getFileName()}</p>
-                <button>Download</button>
+                <a href="download?id=${item.item().getFileId()}">
+                    <button>Download</button>
+                </a>
             </c:if>
             <c:if test="${empty item}">
                 <h2>This item is not shared with you or is non-existent</h2>

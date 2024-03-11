@@ -72,6 +72,7 @@ ion-icon {
     backdrop-filter: blur(10px);
     z-index: 100;
     border-radius: 5px 0;
+    display: none;
 }
 
 .header__logo {

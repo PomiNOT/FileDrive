@@ -19,6 +19,10 @@
             <ion-icon name="add-circle-outline"></ion-icon>
             Undo Trash
         </button>
+        <button id="deleteItemsButton" class="outline" type="button" disabled>
+            <ion-icon name="add-circle-outline"></ion-icon>
+            Delete Items
+        </button>
     </div>
 
     <form method="GET" hx-get="files" hx-target="#mainFileList" hx-swap="innerHTML" hx-trigger="change" class="toolbar__reload">

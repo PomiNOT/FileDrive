@@ -14,13 +14,14 @@ public class FileDAO extends DBContext {
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
-        String sql = "INSERT INTO Files (owner, location, isFolder, path, fileName) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Files (owner, location, isFolder, path, fileName, size) VALUES (?, ?, ?, ?, ?, ?)";
         stmt = connection.prepareStatement(sql);
         stmt.setString(1, file.getOwner());
         stmt.setString(2, file.getLocation());
         stmt.setBoolean(3, file.isFolder());
         stmt.setString(4, file.getPath());
         stmt.setString(5, file.getFileName());
+        stmt.setInt(6, file.getSize());
         stmt.executeUpdate();
         connection.commit();
     }
@@ -36,6 +37,7 @@ public class FileDAO extends DBContext {
             item.setPath(rs.getString("path"));
             item.setOldParent(rs.getInt("oldParent"));
             item.setUpdated(rs.getTimestamp("updated"));
+            item.setSize(rs.getInt("size"));
 
             return item;
     }
@@ -75,7 +77,7 @@ public class FileDAO extends DBContext {
         }
 
         stmt = connection.prepareStatement(sql);
-        stmt.setString(1, startsWith + "%");
+        stmt.setString(1, "%" + startsWith + "%");
         stmt.setString(2, owner);
         stmt.setString(3, (path == null ? "-1" : path) + "%");
         stmt.setBoolean(4, isFolder);

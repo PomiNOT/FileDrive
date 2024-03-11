@@ -60,12 +60,12 @@
         <servlet-class>controller.SharedViewController</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>DownloadController</servlet-name>
-        <servlet-class>controller.DownloadController</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>SearchController</servlet-name>
         <servlet-class>controller.SearchController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DownloadController</servlet-name>
+        <servlet-class>controller.DownloadController</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>Dashboard</servlet-name>
@@ -90,5 +90,9 @@
     <servlet-mapping>
         <servlet-name>SearchController</servlet-name>
         <url-pattern>/search</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DownloadController</servlet-name>
+        <url-pattern>/download</url-pattern>
     </servlet-mapping>
 </web-app>

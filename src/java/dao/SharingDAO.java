@@ -112,8 +112,11 @@ public class SharingDAO extends DBContext {
         ResultSet rs = stmt.executeQuery();
         connection.commit();
 
-        rs.next();
 
-        return makeItemFromResultSet(rs);
+        if (rs.next()) {
+            return makeItemFromResultSet(rs);
+        } else {
+            return null;
+        }
     }
 }

@@ -6,7 +6,7 @@
         Files
     </div>
     <form class="header__search" hx-get="search" hx-trigger="input" hx-target="#search-results">
-        <input class="header__search-input" type="text" placeholder="🔍 Search" name="search">
+        <input class="header__search-input" type="text" placeholder="🔍 Search" name="search" oninput="toggleSearchBar(event)">
         <div class="header__search-results">
             <div id="search-results">
                 <%@include file="SearchFileList.jsp" %>
@@ -64,3 +64,21 @@
         </ul>
     </details>
 </div>
+
+<script>
+    const input = document.querySelector('.header__search-input');
+    const searchResults = document.querySelector('.header__search-results');
+
+    function toggleSearchBar(e) {
+        if (e.target.value) {
+            searchResults.style.display = 'block';
+        } else {
+            searchResults.style.display = 'none';
+        }
+    }
+
+    function dismissSearch() {
+        input.value = '';
+        searchResults.style.display = 'none';
+    }
+</script>

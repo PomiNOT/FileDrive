@@ -2,6 +2,7 @@
     const fileLists = document.querySelectorAll('[data-list]');
 
     const undoTrashButton = document.querySelector('#undoTrashButton');
+    const deleteItemsButton = document.querySelector('#deleteItemsButton');
     const mainFileList = document.querySelector('#mainFileList');
 
     function refresh() {
@@ -19,11 +20,13 @@
                 count++;
 
                 undoTrashButton.disabled = false;
+                deleteItemsButton.disabled = false;
             } else if (e.target.checked === false) {
                 count--;
 
                 if (count <= 0) {
                     undoTrashButton.disabled = true;
+                    deleteItemsButton.disabled = true;
                     count = 0;
                 }
             }
@@ -34,6 +37,7 @@
         const resetCount = function() {
             count = 0;
             undoTrashButton.disabled = true;
+            deleteItemsButton.disabled = true;
         }
 
         return { setCount, resetCount };
@@ -59,6 +63,18 @@
         const form = getSelectedFilesForm();
         form.append('action', 'markTrash');
         form.append('trashed', 'false');
+
+        await fetch('files', {
+            method: 'POST',
+            body: form
+        });
+
+        refresh();
+    });
+
+    deleteItemsButton.addEventListener('click', async (e) => {
+        const form = getSelectedFilesForm();
+        form.append('action', 'completelyRemove');
 
         await fetch('files', {
             method: 'POST',

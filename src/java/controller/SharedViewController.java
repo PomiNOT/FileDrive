@@ -31,13 +31,16 @@ public class SharedViewController extends HttpServlet {
 
             boolean matchSharedTo = account != null &&
                     item.shareInfo().getSharedTo().equals(account.getUsername());
-            
-            if (item.shareInfo().isPublic() || matchSharedTo) {
+
+            boolean fromSelf = account == null ? false : account.getUsername().equals(item.shareInfo().getSharedBy());            
+
+            if (item.shareInfo().isPublic() || matchSharedTo || fromSelf) {
                 request.setAttribute("item", item);
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+
         request.getRequestDispatcher("/pages/SharedFilePage.jsp").forward(request, response);
     } 
 

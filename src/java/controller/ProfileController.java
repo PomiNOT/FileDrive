@@ -1,30 +1,46 @@
 package controller;
 
+import dao.FileDAO;
 import dao.LoginDAO;
+import dao.StorageHistoryDAO;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.io.File;
 import java.sql.SQLException;
 import model.UserAccount;
+import utils.FileUtils;
 import utils.SessionUtils;
 
 public class ProfileController extends HttpServlet {
     public LoginDAO dao;
+    public StorageHistoryDAO sthis;
+    public FileDAO fdao;
 
     @Override
     public void init() {
         dao = new LoginDAO();
+        sthis = new StorageHistoryDAO();
+        fdao = new FileDAO();
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        if (SessionUtils.getSessionUser(request) == null) {
+        var account = SessionUtils.getSessionUser(request);
+        if (account == null) {
             response.sendRedirect("login");
             return;
+        }
+
+        try {
+            var history = sthis.getAllForUser(account.getUsername());
+            request.setAttribute("history", history);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
         }
 
 		request.getRequestDispatcher("/pages/ProfilePage.jsp").forward(request, response);
@@ -40,6 +56,7 @@ public class ProfileController extends HttpServlet {
         try {
             switch (action) {
                 case "delete" -> {
+                    removeUserFiles(account.getUsername());
                     dao.deleteUser(account.getUsername());
                     response.sendRedirect("login");
                 }
@@ -49,10 +66,10 @@ public class ProfileController extends HttpServlet {
                     String password = request.getParameter("password");
                     String oldPassword = request.getParameter("oldPassword");
 
-                    if (password == null) {
+                    if (password == null || password.isBlank()) {
                         password = account.getPassword();
                     } else {
-                        if (oldPassword == null || !oldPassword.equals(account.getPassword())) {
+                        if (oldPassword == null || oldPassword.isBlank() || !oldPassword.equals(account.getPassword())) {
                             request.setAttribute("message", "Old password does not match");
                             break;
                         }
@@ -80,8 +97,34 @@ public class ProfileController extends HttpServlet {
 		request.getRequestDispatcher("/pages/ProfilePage.jsp").forward(request, response);
     }
 
+    private void removeUserFiles(String username) throws SQLException {
+        var all = fdao.getAllFilesMatching(
+                username,
+                "-1",
+                null,
+                false,
+                ""
+        );
+
+        var trash = fdao.getAllFilesMatching(
+                username,
+                "-2",
+                null,
+                false,
+                ""
+        );
+
+        all.addAll(trash);
+
+        for (var item : all) {
+            String path = FileUtils.getFilePath(getServletContext(), item.getLocation());
+            var file = new File(path);
+            file.delete();
+        }
+    }
+
     @Override
     public String getServletInfo() {
-        return "Home page";
+        return "Profile page";
     }
 }

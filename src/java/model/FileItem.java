@@ -12,9 +12,19 @@ public class FileItem {
     private String path = "-1";
     private Date updated = new Date();
     private boolean trashed = false;
+    private int size = 0;
     private int oldParent = -1;
 
     public FileItem() {}
+
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
 
     public int getFileId() {
         return fileId;

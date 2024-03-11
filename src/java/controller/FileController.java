@@ -16,8 +16,10 @@ import model.FileItem;
 import model.UserAccount;
 import utils.SessionUtils;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import model.ShareItem;
+import utils.FileUtils;
 
 public class FileController extends HttpServlet {
     FileDAO dao;
@@ -177,6 +179,25 @@ public class FileController extends HttpServlet {
                         return;
                     }
                 }
+                case "completelyRemove" -> {
+                    String[] files = request.getParameterValues("files");
+
+                    try {
+                        for (int i = 0; i < files.length; i++) {
+                            int id = Integer.parseInt(files[i]);
+                            removeFile(id, account.getUsername());
+                            dao.deleteFile(id);
+                        }
+                    } catch (SQLException e) {
+                        System.out.println(e.getMessage());
+                        response.sendError(500, "Internal Server Error");
+                        return;
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        response.sendError(400, e.getMessage());
+                        return;
+                    }
+                }
                 case "shareFile" -> {
                     int id = Integer.parseInt(request.getParameter("fileId"));
                     String sharedTo = request.getParameter("sharedTo");
@@ -232,29 +253,52 @@ public class FileController extends HttpServlet {
             return;
         }
 
-        String defaultPath = getServletContext().getInitParameter("storagePath");
         String uuid = UUID.randomUUID().toString();
-        String fileLocation = defaultPath + File.separator + uuid;
+        String fileLocation = FileUtils.getFilePath(getServletContext(), uuid);
         String parent = request.getParameter("parent");
 
-        for (Part part : request.getParts()) {
-            part.write(fileLocation);
+        Part part = request.getParts().iterator().next();
+        part.write(fileLocation);
 
+        FileItem item = new FileItem();
+        item.setFileName(part.getSubmittedFileName());
+        item.setIsFolder(false);
+        item.setLocation(uuid);
+        item.setOwner(account.getUsername());
+        item.setPath(parent == null ? "-1" : parent);
+        item.setSize((int)part.getSize());
 
-            FileItem item = new FileItem();
-            item.setFileName(part.getSubmittedFileName());
-            item.setIsFolder(false);
-            item.setLocation(uuid);
-            item.setOwner(account.getUsername());
-            item.setPath(parent == null ? "-1" : parent);
+        try {
+            dao.createFile(item);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            response.sendError(500, "Internal Server Error");
+            return;
+        }
+    }
 
-            try {
-                dao.createFile(item);
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-                response.sendError(500, "Internal Server Error");
-                return;
-            }
+    private void removeFile(int id, String owner) throws SQLException {
+        var item = dao.getFileById(id);
+        var list = new ArrayList<FileItem>();
+
+        if (item.isFolder()) {
+            var descendants = dao.getAllFilesMatching(
+                    owner,
+                    item.getDescendantPath(),
+                    null,
+                    false,
+                    ""
+            );
+            
+            list.addAll(descendants);
+        } else {
+            list.add(item);
+        }
+
+        for (var f : list) {
+            String path = FileUtils.getFilePath(getServletContext(), f.getLocation());
+            var file = new File(path);
+            file.delete();
         }
     }
 }

@@ -1,9 +1,17 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <form
     data-list
     hx-target="this"
+<c:choose>
+    <c:when test="${not empty param.path}">
+    hx-get="files?path=${param.path}"
+    </c:when>
+    <c:otherwise>
     hx-get="files"
+    </c:otherwise>
+</c:choose>
     hx-trigger="load, refresh"
     id="mainFileList"
 >
