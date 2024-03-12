@@ -26,6 +26,25 @@ public class LoginDAO extends DBContext {
 
         return getUserByUsername(user.getUsername());
     }
+    
+    public List<UserAccount> getAll() throws SQLException {
+        var list = new ArrayList<UserAccount>();
+        
+        String sql = "select * from Users";
+        var rs = connection.prepareStatement(sql).executeQuery();
+        
+        while (rs.next()) {
+            var user = new UserAccount();
+            user.setUsername(rs.getString("username"));
+            user.setPassword(rs.getString("password"));
+            user.setFirstName(rs.getString("firstName"));
+            user.setLastName(rs.getString("lastName"));
+            user.setRole(UserRole.fromInt(rs.getInt("role")));
+            list.add(user);
+        }
+        
+        return list;
+    }
 
     public void updateUser(UserAccount user) throws SQLException {
         PreparedStatement stmt = null;

@@ -1,5 +1,6 @@
 package model;
 
+import java.io.InputStream;
 import java.util.Date;
 
 public class FileItem {
@@ -14,8 +15,17 @@ public class FileItem {
     private boolean trashed = false;
     private int size = 0;
     private int oldParent = -1;
+    private InputStream fileInputStream;
 
     public FileItem() {}
+
+    public InputStream getFileInputStream() {
+        return fileInputStream;
+    }
+
+    public void setFileInputStream(InputStream fileInputStream) {
+        this.fileInputStream = fileInputStream;
+    }
 
     public int getSize() {
         return size;

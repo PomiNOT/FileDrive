@@ -33,6 +33,10 @@
         <filter-name>Auth</filter-name>
         <url-pattern>/search</url-pattern>
     </filter-mapping>
+    <filter-mapping>
+        <filter-name>Auth</filter-name>
+        <url-pattern>/admin</url-pattern>
+    </filter-mapping>
     <servlet>
         <servlet-name>Login</servlet-name>
         <servlet-class>controller.LoginController</servlet-class>
@@ -67,6 +71,10 @@
         <servlet-name>DownloadController</servlet-name>
         <servlet-class>controller.DownloadController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>AdminController</servlet-name>
+        <servlet-class>controller.AdminController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Dashboard</servlet-name>
         <url-pattern>/dashboard</url-pattern>
@@ -94,5 +102,9 @@
     <servlet-mapping>
         <servlet-name>DownloadController</servlet-name>
         <url-pattern>/download</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AdminController</servlet-name>
+        <url-pattern>/admin</url-pattern>
     </servlet-mapping>
 </web-app>

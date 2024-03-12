@@ -24,7 +24,7 @@ public class ProfileController extends HttpServlet {
     public void init() {
         dao = new LoginDAO();
         sthis = new StorageHistoryDAO();
-        fdao = new FileDAO();
+        fdao = new FileDAO(getServletContext().getInitParameter("storagePath"));
     }
 
     @Override
@@ -56,7 +56,7 @@ public class ProfileController extends HttpServlet {
         try {
             switch (action) {
                 case "delete" -> {
-                    removeUserFiles(account.getUsername());
+                    fdao.removeUserFiles(account.getUsername());
                     dao.deleteUser(account.getUsername());
                     response.sendRedirect("login");
                 }
@@ -95,32 +95,6 @@ public class ProfileController extends HttpServlet {
         }
         
 		request.getRequestDispatcher("/pages/ProfilePage.jsp").forward(request, response);
-    }
-
-    private void removeUserFiles(String username) throws SQLException {
-        var all = fdao.getAllFilesMatching(
-                username,
-                "-1",
-                null,
-                false,
-                ""
-        );
-
-        var trash = fdao.getAllFilesMatching(
-                username,
-                "-2",
-                null,
-                false,
-                ""
-        );
-
-        all.addAll(trash);
-
-        for (var item : all) {
-            String path = FileUtils.getFilePath(getServletContext(), item.getLocation());
-            var file = new File(path);
-            file.delete();
-        }
     }
 
     @Override

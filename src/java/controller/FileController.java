@@ -11,7 +11,6 @@ import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.Part;
 import java.io.IOException;
 import java.io.File;
-import java.util.UUID;
 import model.FileItem;
 import model.UserAccount;
 import utils.SessionUtils;
@@ -27,8 +26,8 @@ public class FileController extends HttpServlet {
 
     @Override
     public void init() {
-        dao = new FileDAO();
-        sharingDAO = new SharingDAO();
+        dao = new FileDAO(getServletContext().getInitParameter("storagePath"));
+        sharingDAO = new SharingDAO(getServletContext().getInitParameter("storagePath"));
     }
 
     @Override
@@ -185,7 +184,6 @@ public class FileController extends HttpServlet {
                     try {
                         for (int i = 0; i < files.length; i++) {
                             int id = Integer.parseInt(files[i]);
-                            removeFile(id, account.getUsername());
                             dao.deleteFile(id);
                         }
                     } catch (SQLException e) {
@@ -253,20 +251,17 @@ public class FileController extends HttpServlet {
             return;
         }
 
-        String uuid = UUID.randomUUID().toString();
-        String fileLocation = FileUtils.getFilePath(getServletContext(), uuid);
         String parent = request.getParameter("parent");
 
         Part part = request.getParts().iterator().next();
-        part.write(fileLocation);
 
         FileItem item = new FileItem();
         item.setFileName(part.getSubmittedFileName());
         item.setIsFolder(false);
-        item.setLocation(uuid);
         item.setOwner(account.getUsername());
         item.setPath(parent == null ? "-1" : parent);
         item.setSize((int)part.getSize());
+        item.setFileInputStream(part.getInputStream());
 
         try {
             dao.createFile(item);
@@ -277,28 +272,5 @@ public class FileController extends HttpServlet {
         }
     }
 
-    private void removeFile(int id, String owner) throws SQLException {
-        var item = dao.getFileById(id);
-        var list = new ArrayList<FileItem>();
-
-        if (item.isFolder()) {
-            var descendants = dao.getAllFilesMatching(
-                    owner,
-                    item.getDescendantPath(),
-                    null,
-                    false,
-                    ""
-            );
-            
-            list.addAll(descendants);
-        } else {
-            list.add(item);
-        }
-
-        for (var f : list) {
-            String path = FileUtils.getFilePath(getServletContext(), f.getLocation());
-            var file = new File(path);
-            file.delete();
-        }
-    }
+   
 }

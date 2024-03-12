@@ -15,7 +15,7 @@ public class SearchController extends HttpServlet {
 
     @Override
     public void init() {
-        dao = new FileDAO();
+        dao = new FileDAO(getServletContext().getInitParameter("storagePath"));
     }
    
     @Override

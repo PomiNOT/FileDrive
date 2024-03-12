@@ -24,8 +24,8 @@ public class DownloadController extends HttpServlet {
 
     @Override
     public void init() {
-        sharingDAO = new SharingDAO();
-        fileDAO = new FileDAO();
+        sharingDAO = new SharingDAO(getServletContext().getInitParameter("storagePath"));
+        fileDAO = new FileDAO(getServletContext().getInitParameter("storagePath"));
     }
    
     @Override
@@ -38,7 +38,7 @@ public class DownloadController extends HttpServlet {
             FileItem item = returnFilePathIfPermissionValid(id, account);
 
             if (item != null) {
-                File file = new File(FileUtils.getFilePath(getServletContext(), item.getLocation()));
+                File file = new File(item.getLocation());
 
                 FileInputStream stream = new FileInputStream(file);
                 response.setContentType("application/octet-stream");

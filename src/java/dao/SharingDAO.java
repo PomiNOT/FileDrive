@@ -8,8 +8,15 @@ import java.util.List;
 import model.FileItem;
 import model.FileShareItem;
 import model.ShareItem;
+import utils.FileUtils;
 
 public class SharingDAO extends DBContext {
+    private String basePath;
+    
+    public SharingDAO(String basePath) {
+        this.basePath = basePath;
+    }
+    
     public void createShare(FileShareItem item) throws SQLException {
         String sql = "INSERT INTO Sharing (fileId, sharedTo, sharedBy, isPublic) VALUES (?, ?, ?, ?)";
         PreparedStatement stmt = connection.prepareStatement(sql);
@@ -31,24 +38,24 @@ public class SharingDAO extends DBContext {
     }
 
     private ShareItem makeItemFromResultSet(ResultSet rs) throws SQLException {
-            FileItem item = new FileItem();
-            FileShareItem shareItem = new FileShareItem();
+        FileItem item = new FileItem();
+        FileShareItem shareItem = new FileShareItem();
 
-            item.setFileId(rs.getInt("file_id"));
-            item.setFileName(rs.getString("file_name"));
-            item.setIsFolder(rs.getBoolean("is_folder"));
-            item.setOwner(rs.getString("owner"));
-            item.setLocation(rs.getString("location"));
-            item.setPath(rs.getString("path"));
-            item.setOldParent(rs.getInt("old_parent"));
-            item.setUpdated(rs.getTimestamp("updated"));
+        item.setFileId(rs.getInt("file_id"));
+        item.setFileName(rs.getString("file_name"));
+        item.setIsFolder(rs.getBoolean("is_folder"));
+        item.setOwner(rs.getString("owner"));
+        item.setLocation(FileUtils.getFilePath(basePath, rs.getString("location")));
+        item.setPath(rs.getString("path"));
+        item.setOldParent(rs.getInt("old_parent"));
+        item.setUpdated(rs.getTimestamp("updated"));
 
-            shareItem.setFileId(rs.getInt("sharing_id"));
-            shareItem.setIsPublic(rs.getBoolean("is_public"));
-            shareItem.setSharedBy(rs.getString("shared_by"));
-            shareItem.setSharedTo(rs.getString("shared_to"));
+        shareItem.setFileId(rs.getInt("sharing_id"));
+        shareItem.setIsPublic(rs.getBoolean("is_public"));
+        shareItem.setSharedBy(rs.getString("shared_by"));
+        shareItem.setSharedTo(rs.getString("shared_to"));
 
-            return new ShareItem(item, shareItem);
+        return new ShareItem(item, shareItem);
     }
 
     private List<ShareItem> makeArrayFromResultSet(ResultSet rs) throws SQLException {

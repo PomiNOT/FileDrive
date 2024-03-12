@@ -1,4 +1,5 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page import="model.UserRole" %>
 
 <div class="header">
     <div class="header__logo">
@@ -60,6 +61,9 @@
         </summary>
         <ul role="listbox">
             <li><a href="profile">View Profile</a></li>
+            <c:if test="${currentUser.getRole() == UserRole.ADMIN}">
+            <li><a href="admin">Control Panel</a></li>
+            </c:if>
             <li><a style="color: red;" href="login?action=logout">Logout</a></li>
         </ul>
     </details>

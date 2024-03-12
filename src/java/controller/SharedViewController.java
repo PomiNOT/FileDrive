@@ -17,7 +17,7 @@ public class SharedViewController extends HttpServlet {
 
     @Override
     public void init() {
-        dao = new SharingDAO();
+        dao = new SharingDAO(getServletContext().getInitParameter("storagePath"));
     }
     
     @Override

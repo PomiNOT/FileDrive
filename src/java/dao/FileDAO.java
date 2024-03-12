@@ -1,5 +1,8 @@
 package dao;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,16 +11,33 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import model.FileItem;
+import java.util.UUID;
+import utils.FileUtils;
 
 public class FileDAO extends DBContext {
-    public void createFile(FileItem file) throws SQLException {
+    private String basePath;
+    
+    public FileDAO(String basePath) {
+        this.basePath = basePath;
+    }
+    
+    public void createFile(FileItem file) throws SQLException, IOException {
+        var uuid = "";
+        if (!file.isFolder()) {
+            uuid = UUID.randomUUID().toString();
+            var diskFile = new File(FileUtils.getFilePath(basePath, uuid));
+            var outStream = new FileOutputStream(diskFile);
+            file.getFileInputStream().transferTo(outStream);
+            outStream.close();
+        }
+
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
         String sql = "INSERT INTO Files (owner, location, isFolder, path, fileName, size) VALUES (?, ?, ?, ?, ?, ?)";
         stmt = connection.prepareStatement(sql);
         stmt.setString(1, file.getOwner());
-        stmt.setString(2, file.getLocation());
+        stmt.setString(2, uuid);
         stmt.setBoolean(3, file.isFolder());
         stmt.setString(4, file.getPath());
         stmt.setString(5, file.getFileName());
@@ -33,7 +53,7 @@ public class FileDAO extends DBContext {
             item.setFileName(rs.getString("fileName"));
             item.setIsFolder(rs.getBoolean("isFolder"));
             item.setOwner(rs.getString("owner"));
-            item.setLocation(rs.getString("location"));
+            item.setLocation(FileUtils.getFilePath(basePath, rs.getString("location")));
             item.setPath(rs.getString("path"));
             item.setOldParent(rs.getInt("oldParent"));
             item.setUpdated(rs.getTimestamp("updated"));
@@ -205,8 +225,71 @@ public class FileDAO extends DBContext {
 
         connection.commit();
     }
+    
+    public int getTotalBytesFor(String username) throws SQLException {
+        PreparedStatement stmt = null;
+        String sql = "select sum(size) as total from Files where owner = ?";
+        stmt = connection.prepareStatement(sql);
+        stmt.setString(1, username);
+        var rs = stmt.executeQuery();
+        connection.commit();
+        rs.next();
+        
+        return rs.getInt("total");
+    }
+    
+    public void removeUserFiles(String username) throws SQLException {
+        var all = getAllFilesMatching(
+                username,
+                "-1",
+                null,
+                false,
+                ""
+        );
+
+        var trash = getAllFilesMatching(
+                username,
+                "-2",
+                null,
+                false,
+                ""
+        );
+
+        all.addAll(trash);
+
+        for (var item : all) {
+            var file = new File(item.getLocation());
+            file.delete();
+        }
+    }
+    
+     private void removeFileFromDisk(int id) throws SQLException {
+        var item = getFileById(id);
+        var list = new ArrayList<FileItem>();
+
+        if (item.isFolder()) {
+            var descendants = getAllFilesMatching(
+                    item.getOwner(),
+                    item.getDescendantPath(),
+                    null,
+                    false,
+                    ""
+            );
+            
+            list.addAll(descendants);
+        } else {
+            list.add(item);
+        }
+
+        for (var f : list) {
+            var file = new File(f.getLocation());
+            file.delete();
+        }
+    }
 
     public void deleteFile(int id) throws SQLException {
+        removeFileFromDisk(id);
+        
         PreparedStatement stmt = null;
 
         String sql = "DELETE FROM Files WHERE fileId = ?";
