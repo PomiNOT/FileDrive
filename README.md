@@ -1,5 +1,11 @@
 # FileDrive
-A file management project similar to Google Drive or OneDrive
+A file management project similar to Google Drive or OneDrive made for my Web Development with Java course.
+
+### Technologies
+- Java Servlet
+- [HTMX](https://htmx.org/) (a nice way to do AJAX)
+- [Pico CSS](https://picocss.com/) (a minimalistic CSS Framework)
+- SQL Server 2019
 
 ## Uploading Files
 https://github.com/user-attachments/assets/149fa1b2-1aeb-4468-8a00-d8546733cc11
